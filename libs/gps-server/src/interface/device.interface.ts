@@ -14,4 +14,7 @@ export interface GpsDeviceInterface {
     getUID(): string;
     handle_data(data: Uint8Array | string): Promise<void>;
     handle_action(action: GPS_MESSAGE_ACTION, message_parts: GpsMessagePartsInterface): Promise<void>;
+    login(can_login: boolean): Promise<void>;
+    logout(): Promise<void>;
+    set_refresh_time(interval: number): Promise<boolean>;
 };
