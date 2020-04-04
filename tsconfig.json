@@ -9,7 +9,18 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true
+    "incremental": true,
+    "paths": {
+      "@miraibit/gps-server": [
+        "libs/gps-server/src"
+      ],
+      "@miraibit/gps-server/*": [
+        "libs/gps-server/src/*"
+      ]
+    }
   },
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

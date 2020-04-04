@@ -1,13 +1,22 @@
 {
-  "name": "nest-typescript-starter",
+  "name": "@aerosales10/nest-gps-server",
   "private": true,
   "version": "1.0.0",
   "description": "Nest TypeScript starter repository",
   "license": "MIT",
+  "keywords": [
+    "NestJS",
+    "discovery",
+    "modules",
+    "GPS"
+  ],
+  "author": {
+    "name": "Alberto E. Rosales"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -55,7 +64,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
     "testRegex": ".spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -63,7 +72,15 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+      "@miraibit/gps-server/(.*)": "<rootDir>/libs/gps-server/src/$1",
+      "@miraibit/gps-server": "<rootDir>/libs/gps-server/src"
+    }
   }
 }

@@ -1,4 +1,18 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src"
+  "sourceRoot": "src",
+  "projects": {
+    "gps-server": {
+      "type": "library",
+      "root": "libs/gps-server",
+      "entryFile": "index",
+      "sourceRoot": "libs/gps-server/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/gps-server/tsconfig.lib.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "webpack": true
+  }
 }
