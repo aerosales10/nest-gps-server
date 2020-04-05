@@ -28,7 +28,7 @@ export class GpsDevice extends EventEmitter implements GpsDeviceInterface {
         return this.uid;
     }
 
-    async handle_data(data: Uint8Array | string): Promise<void> {
+    async handle_data(data: Buffer | string): Promise<void> {
         const parts = await this.adapter.parse_data(data);
 
         if (!parts) {

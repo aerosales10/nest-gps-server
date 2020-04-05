@@ -12,7 +12,7 @@ export interface GpsDeviceInterface {
     loged: boolean;
 
     getUID(): string;
-    handle_data(data: Uint8Array | string): Promise<void>;
+    handle_data(data: Buffer | string): Promise<void>;
     handle_action(action: GPS_MESSAGE_ACTION, message_parts: GpsMessagePartsInterface): Promise<void>;
     login(can_login: boolean): Promise<void>;
     logout(): Promise<void>;

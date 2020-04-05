@@ -1,13 +1,14 @@
-import { Injectable, Inject, OnApplicationBootstrap, OnApplicationShutdown, LoggerService } from '@nestjs/common';
+import { Injectable, Inject, OnApplicationBootstrap, OnApplicationShutdown, LoggerService, Logger } from '@nestjs/common';
 import { Server, Socket, createServer } from 'net';
 import { EventEmitter } from 'events';
-import { GpsServerOptionsInterface, GpsDeviceInterface } from './interface';
+import { GpsServerOptionsInterface } from './interface';
 import { DeviceAbstractFactory } from './factory';
+import { AbstractGpsDevice } from './models';
 
 @Injectable()
 export class GpsServerService extends EventEmitter implements OnApplicationBootstrap, OnApplicationShutdown {
     protected server: Server;
-    protected devices: Array<GpsDeviceInterface>;
+    protected devices: Array<AbstractGpsDevice>;
     protected options: GpsServerOptionsInterface;
     protected logger: LoggerService;
     protected factory: DeviceAbstractFactory;
@@ -15,16 +16,13 @@ export class GpsServerService extends EventEmitter implements OnApplicationBoots
     constructor(
         @Inject('GPS_CONFIG_OPTIONS') options: GpsServerOptionsInterface,
         factory: DeviceAbstractFactory,
-        logger: LoggerService
+        logger: Logger
     ) {
         super({ captureRejections: true });
         this.options = options;
         this.logger = logger;
         this.factory = factory;
-    }
-
-    onServerInit(socket: Socket): void {
-        this.factory.create(socket);
+        this.devices = [];
     }
 
     onApplicationShutdown(signal?: string) {
@@ -34,9 +32,27 @@ export class GpsServerService extends EventEmitter implements OnApplicationBoots
     }
 
     onApplicationBootstrap() {
-        this.server = createServer(this.onServerInit).listen({
+        let self = this;
+        this.server = createServer((socket: Socket) => {
+            self.logger.debug(`Incomming connection from ${socket.remoteAddress}`);
+            const device = this.factory.create(socket);
+            self.devices.push(device);
+
+            socket.on('data', (data) => device.emit('data', data));
+            socket.on('end', () => {
+                let index = self.devices.findIndex((device: AbstractGpsDevice, index: number) => {
+                    if (device.socket == socket) {
+                        self.devices.splice(index, 1);
+                        return index;
+                    }
+                });
+                if (index < 0) return;
+                device.emit('disconnected');
+            });
+        }).listen({
             host: this.options.bind,
             port: this.options.port
         });
+        this.logger.debug(`The server is listening on ${this.options.bind}:${this.options.port}`);
     }
 }
