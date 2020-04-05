@@ -1,9 +1,0 @@
-{
-  "extends": "../../tsconfig.json",
-  "experimentalDecorators": true,
-  "compilerOptions": {
-    "declaration": true,
-    "outDir": "../../dist/libs/gps-server"
-  },
-  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
-}

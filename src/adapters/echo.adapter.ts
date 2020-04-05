@@ -1,4 +1,13 @@
-import { GpsAdapterInterface, GpsMessagePartsInterface, GpsAlarmDataInterface, GpsPingDataInterface, GpsOtherActionsDataInterface, GPS_MESSAGE_ACTION, GpsDeviceInterface } from '../interface';
+import {
+    GpsAdapterInterface,
+    GpsMessagePartsInterface,
+    GpsAlarmDataInterface,
+    GpsPingDataInterface,
+    GpsOtherActionsDataInterface,
+    GPS_MESSAGE_ACTION,
+    GpsDeviceInterface
+} from '../interface';
+
 export class Echo implements GpsAdapterInterface {
     device: GpsDeviceInterface;
 

@@ -5,19 +5,9 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es2017",
+    "target": "ES6",
     "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "paths": {
-      "@miraibit/gps-server": [
-        "libs/gps-server/src"
-      ],
-      "@miraibit/gps-server/*": [
-        "libs/gps-server/src/*"
-      ]
-    }
+    "outDir": "./dist"
   },
   "exclude": [
     "node_modules",
