@@ -47,12 +47,12 @@ export class GpsDevice extends EventEmitter implements GpsDeviceInterface {
         }
 
         this.uid = parts.device_id;
-
+        await this.handle_action(parts.action, parts);
     }
 
     async handle_action(action: GPS_MESSAGE_ACTION, message_parts: GpsMessagePartsInterface): Promise<void> {
         if (action != GPS_MESSAGE_ACTION.LOGIN_REQUEST && !this.loged) {
-            await this.adapter.request_login();
+            await this.adapter.send_device_request_login();
             this.logger.debug(`${this.getUID()} is trying to ${GPS_MESSAGE_ACTION[action]} but isn't logged. Action wasn't executed.`);
             return;
         }
@@ -77,8 +77,9 @@ export class GpsDevice extends EventEmitter implements GpsDeviceInterface {
     }
 
     async handle_login_request(message_parts: GpsMessagePartsInterface): Promise<boolean> {
-        const other_actions = await this.adapter.get_other_actions(message_parts);
-        return this.emit('other_actions', other_actions, message_parts);
+        let can_login = await this.adapter.login_request(this.getUID(), message_parts);
+        this.login(can_login);
+        return this.loged;
     }
 
     async handle_other_request(message_parts: GpsMessagePartsInterface): Promise<boolean> {
@@ -94,7 +95,7 @@ export class GpsDevice extends EventEmitter implements GpsDeviceInterface {
             return;
         }
         this.loged = true;
-        await this.adapter.authorize();
+        await this.adapter.send_device_authorized();
         this.logger.debug(`Device ${this.getUID()} has been authorized.`);
     }
 

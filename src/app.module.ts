@@ -4,8 +4,10 @@ import { AppService } from './app.service';
 import { GpsServerModule } from '@miraibit/gps-server';
 
 @Module({
-  imports: [GpsServerModule],
+  imports: [GpsServerModule.register({
+    port: 8086
+  })],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

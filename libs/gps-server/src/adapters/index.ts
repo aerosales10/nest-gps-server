@@ -1,1 +1,1 @@
-export * from './GPS103.adapter';
+export * from './echo.adapter';

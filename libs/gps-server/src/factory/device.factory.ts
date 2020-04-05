@@ -7,7 +7,7 @@ import { AbstractGpsDevice } from '../models';
 
 @Injectable()
 export class DeviceFactory extends DeviceAbstractFactory {
-    constructor(@Inject('GPS_ADAPTER') adapter: GpsAdapterInterface, logger: Logger) {
+    constructor(@Inject('GPS_ADAPTER') adapter: GpsAdapterInterface, @Inject('GPS_LOGGER') logger: LoggerService) {
         super(adapter, logger);
     }
     public create(socket: Socket): AbstractGpsDevice {
