@@ -7,7 +7,7 @@ export class Echo implements GpsAdapterInterface {
         let response = {
             action: GPS_MESSAGE_ACTION.PING,
             cmd: "Echo",
-            data: data,
+            data: str_data,
             device_id: "1234567890"
         };
 
@@ -24,6 +24,7 @@ export class Echo implements GpsAdapterInterface {
         };
     }
     async get_ping_data(message: GpsMessagePartsInterface): Promise<GpsPingDataInterface> {
+        this.device.send(`${JSON.stringify(message)}\r\n`);
         return {
             date: new Date(),
             latitude: 0,
@@ -32,11 +33,11 @@ export class Echo implements GpsAdapterInterface {
         };
     }
     async send_device_authorized(): Promise<void> {
-        await this.device.send("Echo loged");
+        await this.device.send("Echo loged\r\n");
         return;
     }
     async send_device_request_login(): Promise<void> {
-        await this.device.send("Please you must login using the login word");
+        await this.device.send("Please you must login using the login word\r\n");
         return;
     }
     async get_other_actions(parts: GpsMessagePartsInterface): Promise<GpsOtherActionsDataInterface> {
@@ -45,12 +46,13 @@ export class Echo implements GpsAdapterInterface {
         };
     }
     async request_logout(): Promise<boolean> {
-        await this.device.send("Please logout");
+        await this.device.send("Please logout\r\n");
         return true;
     }
     async set_refresh_time(interval: number): Promise<boolean> {
         return true;
     }
+
     async login_request(uid: string, message: GpsMessagePartsInterface): Promise<boolean> {
         return true;
     }

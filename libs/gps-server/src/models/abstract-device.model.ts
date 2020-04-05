@@ -21,6 +21,7 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
         this.port = socket.remotePort;
         this.on('data', this.handle_data);
         this.logger = logger || Logger;
+        this.adapter.device = this;
     }
 
     getUID(): string {

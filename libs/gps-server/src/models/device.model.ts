@@ -1,6 +1,5 @@
-import { GpsDeviceInterface, GpsAdapterInterface, GPS_MESSAGE_ACTION, GpsMessagePartsInterface } from "../interface";
+import { GpsAdapterInterface, GPS_MESSAGE_ACTION, GpsMessagePartsInterface } from "../interface";
 import { Socket } from "net";
-import { EventEmitter } from "events";
 import { LoggerService, Logger } from '@nestjs/common';
 import { GpsLoginRequestEvent, GpsLoginFailEvent, GpsPingEvent, GpsAlarmEvent } from "../events";
 import { AbstractGpsDevice } from "./abstract-device.model";
@@ -17,13 +16,6 @@ export class GpsDevice extends AbstractGpsDevice {
 
     constructor(adapter: GpsAdapterInterface, socket: Socket, logger?: LoggerService) {
         super(adapter, socket, logger);
-        this.adapter = adapter;
-        this.socket = socket;
-        this.ip = socket.remoteAddress;
-        this.port = socket.remotePort;
-        this.on('data', this.handle_data);
-        this.logger = logger || Logger;
-        this.adapter.device = this;
     }
 
     getUID(): string {
@@ -59,12 +51,12 @@ export class GpsDevice extends AbstractGpsDevice {
     async handle_login_request(message_parts: GpsMessagePartsInterface): Promise<boolean> {
         let can_login = await this.adapter.login_request(this.getUID(), message_parts);
         this.login(can_login);
-        return this.loged;
+        const login_event: GpsLoginRequestEvent = { uid: this.getUID(), message: message_parts, ip: this.ip };
+        return this.emit('login_request', login_event);
     }
 
     async handle_other_request(message_parts: GpsMessagePartsInterface): Promise<boolean> {
-        const login_event: GpsLoginRequestEvent = { uid: this.getUID(), message: message_parts, ip: this.ip };
-        return this.emit('login_request', login_event);
+        return this.emit('other_request', message_parts);
     }
 
     async login(can_login: boolean): Promise<void> {
@@ -105,7 +97,7 @@ export class GpsDevice extends AbstractGpsDevice {
 
         this.logger.debug(`Alarm received ( ${alarm_data.code}, ${alarm_data.msg} )`);
         const alarm_event: GpsAlarmEvent = { uid: this.getUID(), alarm_data: alarm_data, message: message_parts };
-        return this.emit('ping', alarm_event);
+        return this.emit('alarm', alarm_event);
     }
 
     async set_refresh_time(interval: number): Promise<boolean> {

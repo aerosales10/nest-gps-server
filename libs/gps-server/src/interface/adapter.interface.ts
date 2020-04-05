@@ -24,7 +24,8 @@ export interface GpsAdapterInterface {
     set_refresh_time(interval: number): Promise<boolean>;
 
     /**
-     * This function executes when the device is trying to login
+     * This function executes when the device is trying to login.
+     * Return true to authenticate the device.
      * @param uid Device uid
      * @param message The message being passed
      */
