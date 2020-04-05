@@ -2,7 +2,7 @@
 
 ## Description
 
-A GPS server for Nestjs framework.
+A GPS server for Nestjs framework. This server was based on [freshworkstudio/gps-tracking-nodejs](https://github.com/freshworkstudio/gps-tracking-nodejs) but it was build from ground up without externals dependencies.
 
 ## Protocols
 

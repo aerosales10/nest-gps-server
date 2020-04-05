@@ -56,7 +56,8 @@ export class GpsDevice extends AbstractGpsDevice {
     }
 
     async handle_other_request(message_parts: GpsMessagePartsInterface): Promise<boolean> {
-        return this.emit('other_request', message_parts);
+        const response = this.adapter.get_other_actions(message_parts);
+        return this.emit('other_request', response);
     }
 
     async login(can_login: boolean): Promise<void> {

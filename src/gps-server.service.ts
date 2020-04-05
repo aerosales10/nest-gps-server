@@ -26,6 +26,26 @@ export class GpsServerService extends EventEmitter implements OnApplicationBoots
         this.devices = [];
     }
 
+    async connection_handler(socket: Socket) {
+        let self = this;
+        self.logger.debug(`Incomming connection from ${socket.remoteAddress}:${socket.remotePort}`);
+        const device = this.factory.create(socket);
+        self.devices.push(device);
+
+        socket.on('data', (data) => device.emit('data', data));
+        socket.on('end', () => {
+            let index = self.devices.findIndex((device: AbstractGpsDevice, index: number) => {
+                if (device.socket.remoteAddress == socket.remoteAddress && device.socket.remotePort == socket.remotePort) {
+                    self.devices.splice(index, 1);
+                    return true;
+                }
+            });
+            if (index < 0) return;
+            self.logger.debug(`Device ${device.socket.remoteAddress}:${device.socket.remotePort} disconnected.`);
+            device.emit('disconnected');
+        });
+    }
+
     onApplicationShutdown(signal?: string) {
         this.server.removeAllListeners();
         this.server.close();
@@ -33,25 +53,7 @@ export class GpsServerService extends EventEmitter implements OnApplicationBoots
     }
 
     onApplicationBootstrap() {
-        let self = this;
-        this.server = createServer(async (socket: Socket) => {
-            self.logger.debug(`Incomming connection from ${socket.remoteAddress}`);
-            const device = this.factory.create(socket);
-            self.devices.push(device);
-
-            socket.on('data', (data) => device.emit('data', data));
-            socket.on('end', () => {
-                let index = self.devices.findIndex((device: AbstractGpsDevice, index: number) => {
-                    if (device.socket.remoteAddress == socket.remoteAddress && device.socket.remotePort == socket.remotePort) {
-                        self.devices.splice(index, 1);
-                        return true;
-                    }
-                });
-                if (index < 0) return;
-                self.logger.debug(`Device ${device.socket.remoteAddress}:${device.socket.remotePort} disconnected.`);
-                device.emit('disconnected');
-            });
-        }).listen({
+        this.server = createServer(this.connection_handler.bind(this)).listen({
             host: this.options.bind,
             port: this.options.port
         });

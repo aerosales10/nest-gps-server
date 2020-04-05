@@ -4,6 +4,6 @@ export interface GpsPingDataInterface {
     latitude: number;
     longitude: number;
     speed?: number;
-    orientation?: number;
+    orientation?: string | number;
     custom?: object;
 }
