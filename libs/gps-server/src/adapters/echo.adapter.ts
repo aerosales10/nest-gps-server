@@ -1,5 +1,7 @@
-import { GpsAdapterInterface, GpsMessagePartsInterface, GpsAlarmDataInterface, GpsPingDataInterface, GpsOtherActionsDataInterface, GPS_MESSAGE_ACTION } from '../interface';
+import { GpsAdapterInterface, GpsMessagePartsInterface, GpsAlarmDataInterface, GpsPingDataInterface, GpsOtherActionsDataInterface, GPS_MESSAGE_ACTION, GpsDeviceInterface } from '../interface';
 export class Echo implements GpsAdapterInterface {
+    device: GpsDeviceInterface;
+
     async parse_data(data: string | Buffer): Promise<GpsMessagePartsInterface> {
         let str_data = data.toString().trim();
         let response = {
@@ -30,9 +32,11 @@ export class Echo implements GpsAdapterInterface {
         };
     }
     async send_device_authorized(): Promise<void> {
+        await this.device.send("Echo loged");
         return;
     }
     async send_device_request_login(): Promise<void> {
+        await this.device.send("Please you must login using the login word");
         return;
     }
     async get_other_actions(parts: GpsMessagePartsInterface): Promise<GpsOtherActionsDataInterface> {
@@ -41,6 +45,7 @@ export class Echo implements GpsAdapterInterface {
         };
     }
     async request_logout(): Promise<boolean> {
+        await this.device.send("Please logout");
         return true;
     }
     async set_refresh_time(interval: number): Promise<boolean> {

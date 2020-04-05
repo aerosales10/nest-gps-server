@@ -17,4 +17,5 @@ export interface GpsDeviceInterface {
     login(can_login: boolean): Promise<void>;
     logout(): Promise<void>;
     set_refresh_time(interval: number): Promise<boolean>;
+    send(msg: Uint8Array | string): Promise<boolean>;
 };

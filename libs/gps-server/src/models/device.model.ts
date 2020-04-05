@@ -3,8 +3,9 @@ import { Socket } from "net";
 import { EventEmitter } from "events";
 import { LoggerService, Logger } from '@nestjs/common';
 import { GpsLoginRequestEvent, GpsLoginFailEvent, GpsPingEvent, GpsAlarmEvent } from "../events";
+import { AbstractGpsDevice } from "./abstract-device.model";
 
-export class GpsDevice extends EventEmitter implements GpsDeviceInterface {
+export class GpsDevice extends AbstractGpsDevice {
     uid: string;
     socket: Socket;
     adapter: GpsAdapterInterface;
@@ -15,39 +16,18 @@ export class GpsDevice extends EventEmitter implements GpsDeviceInterface {
     logger: LoggerService;
 
     constructor(adapter: GpsAdapterInterface, socket: Socket, logger?: LoggerService) {
-        super({ captureRejections: true });
+        super(adapter, socket, logger);
         this.adapter = adapter;
         this.socket = socket;
         this.ip = socket.remoteAddress;
         this.port = socket.remotePort;
         this.on('data', this.handle_data);
         this.logger = logger || Logger;
+        this.adapter.device = this;
     }
 
     getUID(): string {
         return this.uid;
-    }
-
-    async handle_data(data: Buffer | string): Promise<void> {
-        const parts = await this.adapter.parse_data(data);
-
-        if (!parts) {
-            this.logger.debug(`The message: ${data} can't be parsed. Discarding`);
-            return;
-        }
-
-        if (!this.getUID() && !parts.device_id) {
-            this.logger.debug(`The adapter doesn't return the device_id`);
-            return;
-        }
-
-        if (!parts.cmd) {
-            this.logger.debug(`The adapter doesn't return the command (cmd) property`);
-            return;
-        }
-
-        this.uid = parts.device_id;
-        await this.handle_action(parts.action, parts);
     }
 
     async handle_action(action: GPS_MESSAGE_ACTION, message_parts: GpsMessagePartsInterface): Promise<void> {
@@ -131,4 +111,8 @@ export class GpsDevice extends EventEmitter implements GpsDeviceInterface {
     async set_refresh_time(interval: number): Promise<boolean> {
         return this.adapter.set_refresh_time(interval);
     }
+
+    async send(msg: Uint8Array | string): Promise<boolean> {
+        return this.socket.write(msg);
+    };
 }

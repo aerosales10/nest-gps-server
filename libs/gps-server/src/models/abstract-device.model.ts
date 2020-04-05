@@ -26,10 +26,32 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
     getUID(): string {
         return this.uid;
     }
+
+    async handle_data(data: Buffer | string): Promise<void> {
+        const parts = await this.adapter.parse_data(data);
+
+        if (!parts) {
+            this.logger.debug(`The message: ${data} can't be parsed. Discarding`);
+            return;
+        }
+
+        if (!this.getUID() && !parts.device_id) {
+            this.logger.debug(`The adapter doesn't return the device_id`);
+            return;
+        }
+
+        if (!parts.cmd) {
+            this.logger.debug(`The adapter doesn't return the command (cmd) property`);
+            return;
+        }
+
+        this.uid = parts.device_id;
+        await this.handle_action(parts.action, parts);
+    }
     
     async abstract handle_action(action: GPS_MESSAGE_ACTION, message_parts: GpsMessagePartsInterface): Promise<void>;
-    async abstract handle_data(data: Buffer | string): Promise<void>;
     async abstract login(can_login: boolean): Promise<void>;
     async abstract logout(): Promise<void>;
     async abstract set_refresh_time(interval: number): Promise<boolean>;
+    async abstract send(msg: Uint8Array | string): Promise<boolean>
 }
