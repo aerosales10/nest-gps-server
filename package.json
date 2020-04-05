@@ -1,8 +1,8 @@
 {
   "name": "@aerosales10/nest-gps-server",
-  "private": true,
+  "private": false,
   "version": "1.0.0",
-  "description": "Nest TypeScript starter repository",
+  "description": "A GPS server for Nestjs",
   "license": "MIT",
   "keywords": [
     "NestJS",
@@ -13,30 +13,28 @@
   "author": {
     "name": "Alberto E. Rosales"
   },
+  "main": "dist/libs/gps-server/index.js",
   "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "build": "nest build gps-server"
   },
-  "dependencies": {
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aerosales10/nest-gps-server"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^7.0.1"
+  },
+  "dependencies": {},
+  "devDependencies": {
     "@nestjs/common": "^7.0.1",
     "@nestjs/core": "^7.0.1",
     "@nestjs/platform-express": "^7.0.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.5.4"
-  },
-  "devDependencies": {
+    "rxjs": "^6.5.4",
     "@nestjs/cli": "^7.0.0",
     "@nestjs/schematics": "^7.0.0",
     "@nestjs/testing": "^7.0.1",
@@ -58,6 +56,10 @@
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.8.3"
   },
+  "files": [
+    "dist/**/*",
+    "*.md"
+  ],
   "jest": {
     "moduleFileExtensions": [
       "js",
@@ -75,8 +77,7 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "roots": [
-      "<rootDir>/src/",
-      "<rootDir>/libs/"
+      "<rootDir>/libs/gps-server"
     ],
     "moduleNameMapper": {
       "@miraibit/gps-server/(.*)": "<rootDir>/libs/gps-server/src/$1",
