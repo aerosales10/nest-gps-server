@@ -68,7 +68,7 @@
       "json",
       "ts"
     ],
-    "rootDir": ".",
+    "rootDir": "dist/libs/gps-server/src",
     "testRegex": ".spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -77,13 +77,6 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "./coverage",
-    "testEnvironment": "node",
-    "roots": [
-      "<rootDir>/libs/gps-server"
-    ],
-    "moduleNameMapper": {
-      "@miraibit/gps-server/(.*)": "<rootDir>/libs/gps-server/src/$1",
-      "@miraibit/gps-server": "<rootDir>/libs/gps-server/src"
-    }
+    "testEnvironment": "node"
   }
 }
