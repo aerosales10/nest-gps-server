@@ -5,14 +5,14 @@ import {
     GpsPingDataInterface,
     GpsOtherActionsDataInterface,
     GPS_MESSAGE_ACTION,
-    GpsDeviceInterface,
 } from '../interface';
 
 import * as functions from '../helpers';
+import { AbstractGpsDevice } from 'models';
 
 const format = { "start": "(", "end": ")", "separator": "" };
 export class TK103 implements GpsAdapterInterface {
-    device: GpsDeviceInterface;
+    device: AbstractGpsDevice;
     async parse_data(data: string | Buffer): Promise<GpsMessagePartsInterface> {
         data = data.toString().trim();
         let cmd_start = data.indexOf("B");
@@ -20,7 +20,7 @@ export class TK103 implements GpsAdapterInterface {
         let start = data.substr(0, 1);
         let finish = data.substr(data.length - 1, 1);
         let response: GpsMessagePartsInterface = {
-            device_id: data.substr(1, cmd_start),
+            device_id: data.substr(1, cmd_start - 1),
             cmd: data.substr(cmd_start, 4),
             data: data.substring(cmd_start + 4, data.length - 1),
             action: null

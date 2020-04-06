@@ -4,12 +4,12 @@ import {
     GpsAlarmDataInterface,
     GpsPingDataInterface,
     GpsOtherActionsDataInterface,
-    GPS_MESSAGE_ACTION,
-    GpsDeviceInterface
+    GPS_MESSAGE_ACTION
 } from '../interface';
+import { AbstractGpsDevice } from 'models';
 
 export class Echo implements GpsAdapterInterface {
-    device: GpsDeviceInterface;
+    device: AbstractGpsDevice;
 
     async parse_data(data: string | Buffer): Promise<GpsMessagePartsInterface> {
         let str_data = data.toString().trim();

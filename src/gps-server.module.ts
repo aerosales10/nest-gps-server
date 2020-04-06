@@ -6,7 +6,13 @@ import { Echo } from './adapters';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 @Module({})
 export class GpsServerModule {
-  static register(options: GpsServerOptionsInterface, metadata?: ModuleMetadata, advanced_options?: GpsAdvancedOptionsInterface): DynamicModule {
+  static async register(options: GpsServerOptionsInterface, metadata?: ModuleMetadata, advanced_options?: GpsAdvancedOptionsInterface): Promise<DynamicModule> {
+    metadata = metadata || {};
+    metadata.controllers = metadata.controllers ?? [];
+    metadata.exports = metadata.exports ?? [];
+    metadata.imports = metadata.imports ?? [];
+    metadata.providers = metadata.providers ?? [];
+
     metadata.providers.push({ provide: 'GPS_CONFIG_OPTIONS', useValue: options });
     metadata.providers.push({ provide: 'GPS_DEVICE_FACTORY', useClass: (advanced_options) ? advanced_options.device_factory : DeviceFactory });
     metadata.providers.push({ provide: 'GPS_LOGGER', useValue: (advanced_options) ? advanced_options.logger : Logger });

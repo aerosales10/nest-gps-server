@@ -22,6 +22,7 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
         this.on('data', this.handle_data);
         this.logger = logger || Logger;
         this.adapter.device = this;
+        this.socket.on('close', () => this.emit('disconnect', this.getUID()));
     }
 
     getUID(): string {
@@ -49,7 +50,7 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
         this.uid = parts.device_id;
         await this.handle_action(parts.action, parts);
     }
-    
+
     async abstract handle_action(action: GPS_MESSAGE_ACTION, message_parts: GpsMessagePartsInterface): Promise<void>;
     async abstract login(can_login: boolean): Promise<void>;
     async abstract logout(): Promise<void>;

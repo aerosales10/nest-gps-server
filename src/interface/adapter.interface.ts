@@ -2,11 +2,11 @@ import { GpsMessagePartsInterface } from "./message_parts.interface";
 import { GpsAlarmDataInterface } from "./alarm-data.interface";
 import { GpsPingDataInterface } from "./ping-data.interface";
 import { GpsOtherActionsDataInterface } from "./other-actions-data.interface";
-import { GpsDeviceInterface } from "./device.interface";
+import { AbstractGpsDevice } from "models";
 
 export interface GpsAdapterInterface {
 
-    device: GpsDeviceInterface;
+    device: AbstractGpsDevice;
 
     parse_data(data: Buffer | string): Promise<GpsMessagePartsInterface>;
     get_alarm_data(message: GpsMessagePartsInterface): Promise<GpsAlarmDataInterface>;
