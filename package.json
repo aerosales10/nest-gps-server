@@ -1,7 +1,7 @@
 {
   "name": "@aerosales10/nest-gps-server",
   "private": false,
-  "version": "1.0.2c",
+  "version": "1.0.2d",
   "description": "A GPS server for Nestjs",
   "license": "MIT",
   "keywords": [
