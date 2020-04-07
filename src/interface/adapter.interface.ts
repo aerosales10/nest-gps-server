@@ -2,7 +2,7 @@ import { GpsMessagePartsInterface } from "./message_parts.interface";
 import { GpsAlarmDataInterface } from "./alarm-data.interface";
 import { GpsPingDataInterface } from "./ping-data.interface";
 import { GpsOtherActionsDataInterface } from "./other-actions-data.interface";
-import { AbstractGpsDevice } from "models";
+import { AbstractGpsDevice } from "../models";
 
 export interface GpsAdapterInterface {
 

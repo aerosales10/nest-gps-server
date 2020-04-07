@@ -11,7 +11,7 @@ describe('AppController (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
-      imports: [GpsServerModule.register({
+      imports: [GpsServerModule.forRoot({
         port: 8086,
         adapter: TK103
       })],

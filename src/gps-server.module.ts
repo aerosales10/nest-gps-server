@@ -1,27 +1,23 @@
 import { Module, Logger, DynamicModule } from '@nestjs/common';
 import { GpsServerService } from './gps-server.service';
 import { DeviceFactory } from './factory';
-import { GpsServerOptionsInterface, GpsAdvancedOptionsInterface } from './interface';
+import { GpsServerOptionsInterface } from './interface';
 import { Echo } from './adapters';
-import { ModuleMetadata } from '@nestjs/common/interfaces';
+
 @Module({})
 export class GpsServerModule {
-  static async register(options: GpsServerOptionsInterface, metadata?: ModuleMetadata, advanced_options?: GpsAdvancedOptionsInterface): Promise<DynamicModule> {
-    metadata = metadata || {};
-    metadata.controllers = metadata.controllers ?? [];
-    metadata.exports = metadata.exports ?? [];
-    metadata.imports = metadata.imports ?? [];
-    metadata.providers = metadata.providers ?? [];
-
-    metadata.providers.push({ provide: 'GPS_CONFIG_OPTIONS', useValue: options });
-    metadata.providers.push({ provide: 'GPS_DEVICE_FACTORY', useClass: (advanced_options) ? advanced_options.device_factory : DeviceFactory });
-    metadata.providers.push({ provide: 'GPS_LOGGER', useValue: (advanced_options) ? advanced_options.logger : Logger });
-    metadata.providers.push({ provide: 'GPS_ADAPTER', useClass: options.adapter ?? Echo });
-    metadata.providers.push(GpsServerService);
-    metadata.exports.push(GpsServerService);
+  static async forRoot(options: GpsServerOptionsInterface): Promise<DynamicModule> {
+    options.imports = options.imports ?? [];
+    options.providers = options.providers ?? [];
+    options.providers.push({ provide: 'GPS_CONFIG_OPTIONS', useValue: options });
+    options.providers.push({ provide: 'GPS_DEVICE_FACTORY', useClass: (options.device_factory) ? options.device_factory : DeviceFactory });
+    options.providers.push({ provide: 'GPS_LOGGER', useValue: (options.logger) ? options.logger : Logger });
+    options.providers.push({ provide: 'GPS_ADAPTER', useClass: options.adapter ?? Echo });
+    options.providers.push(GpsServerService);
     return {
       module: GpsServerModule,
-      ...metadata
+      imports: options.imports,
+      providers: options.providers
     };
   }
 }

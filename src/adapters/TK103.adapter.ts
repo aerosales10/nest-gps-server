@@ -8,9 +8,11 @@ import {
 } from '../interface';
 
 import * as functions from '../helpers';
-import { AbstractGpsDevice } from 'models';
+import { AbstractGpsDevice } from '../models';
+import { Injectable } from '@nestjs/common';
 
 const format = { "start": "(", "end": ")", "separator": "" };
+@Injectable()
 export class TK103 implements GpsAdapterInterface {
     device: AbstractGpsDevice;
     async parse_data(data: string | Buffer): Promise<GpsMessagePartsInterface> {
@@ -137,6 +139,7 @@ export class TK103 implements GpsAdapterInterface {
         var time = functions.str_pad(interval.toString(16), 4, '0') + functions.str_pad(hours.toString(16), 2, '0') + functions.str_pad(minutes.toString(16), 2, '0');
         return this.send_comand("AR00", time);
     }
+
     async login_request(uid: string, message: GpsMessagePartsInterface): Promise<boolean> {
         return true;
     }

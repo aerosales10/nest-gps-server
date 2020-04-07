@@ -6,7 +6,7 @@ import {
     GpsOtherActionsDataInterface,
     GPS_MESSAGE_ACTION
 } from '../interface';
-import { AbstractGpsDevice } from 'models';
+import { AbstractGpsDevice } from '../models';
 
 export class Echo implements GpsAdapterInterface {
     device: AbstractGpsDevice;

@@ -1,4 +1,4 @@
-import { Injectable, Inject, OnApplicationBootstrap, OnApplicationShutdown, LoggerService, Logger } from '@nestjs/common';
+import { Injectable, Inject, OnApplicationBootstrap, OnApplicationShutdown, LoggerService } from '@nestjs/common';
 import { Server, Socket, createServer } from 'net';
 import { EventEmitter } from 'events';
 import { GpsServerOptionsInterface } from './interface';
@@ -52,7 +52,7 @@ export class GpsServerService extends EventEmitter implements OnApplicationBoots
         delete this.devices;
     }
 
-    onApplicationBootstrap() {
+    async onApplicationBootstrap() {
         this.server = createServer(this.connection_handler.bind(this)).listen({
             host: this.options.bind,
             port: this.options.port

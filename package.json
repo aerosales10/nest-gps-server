@@ -1,7 +1,7 @@
 {
   "name": "@aerosales10/nest-gps-server",
   "private": false,
-  "version": "1.0.2d",
+  "version": "1.0.3",
   "description": "A GPS server for Nestjs",
   "license": "MIT",
   "keywords": [
@@ -32,6 +32,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs-plus/discovery": "^2.0.2",
     "@nestjs/common": "^7.0.1",
     "@nestjs/core": "^7.0.1",
     "@nestjs/platform-express": "^7.0.1",

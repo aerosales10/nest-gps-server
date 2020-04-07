@@ -6,3 +6,4 @@ export * from './factory';
 export * from './interface';
 export * from './models';
 export * from './helpers';
+export * from './providers';

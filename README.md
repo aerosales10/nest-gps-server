@@ -77,7 +77,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GpsServerModule, Echo } from '@aerosales10/nest-gps-server';
 @Module({
-  imports: [GpsServerModule.register({
+  imports: [GpsServerModule.forRoot({
     port: 8086,
     adapter: Echo
   })],
@@ -101,7 +101,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GpsServerModule } from '@aerosales10/nest-gps-server';
 @Module({
-  imports: [GpsServerModule.register({
+  imports: [GpsServerModule.forRoot({
     port: 8086
   })],
   controllers: [AppController],
