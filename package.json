@@ -22,7 +22,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc",
-    "start:debug": "nest start --debug --watch",
+    "start:debug": "npm run build && nest start --debug --watch",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",

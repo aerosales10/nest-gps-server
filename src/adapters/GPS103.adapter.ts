@@ -32,11 +32,6 @@ const MESSAGE_CODES = {
 
 Object.freeze(MESSAGE_CODES);
 
-const ALARM_INDEX_CODES = {
-
-};
-
-Object.freeze(ALARM_INDEX_CODES);
 
 const ALARM_TEXT_CODES = [
     "help me",                                  // SOS ALARM
@@ -52,6 +47,10 @@ const ALARM_TEXT_CODES = [
     "footbrake alarm",                          // FOOTBRAKE ALARM
     "T:"                                        // TEMPERATURE ALARM
 ];
+
+const LOGIN_REGEX = /^##,imei:(?<IMEI>\d{15,16}),A;$/g;
+const HEARTBEAT_REGEX = /^(?<IMEI>\d{15,16})$/g;
+const DATA_REGEX = /^imei:(?<IMEI>\d{15,16}),(?<DATA>.+);$/g
 
 export class GPS103 implements GpsAdapterInterface {
     device: AbstractGpsDevice;
@@ -91,6 +90,13 @@ export class GPS103 implements GpsAdapterInterface {
             case 'heartbeat':
                 this.send_raw("ON");
                 break;
+            case 'OBD':
+                this.device.logger.debug(parts);
+                break;
+            case 'TPMS':
+                this.device.logger.debug(parts);
+                break;
+
         }
         return null;
     }
@@ -114,32 +120,36 @@ export class GPS103 implements GpsAdapterInterface {
             action: null
             //optional parameters. Anything you want.
         };
-
-        if (data.startsWith("##") && data.endsWith("A;")) {
-            parts.device_id = data.substring(8, data.indexOf("A") - 1);
+        let login_test = LOGIN_REGEX.exec(data);
+        if (login_test) {
+            let groups = login_test.groups;
+            parts.device_id = groups['IMEI'];
             parts.cmd = "login_request";
             parts.action = GPS_MESSAGE_ACTION.LOGIN_REQUEST;
             parts.data = data;
             return parts;
         }
 
-        if (!data.startsWith("imei:") && !data.endsWith(";")) {
-            if (data.length < 16 && data.length > 8) {
-                parts.device_id = data;
-                parts.cmd = "heartbeat";
-                parts.action = GPS_MESSAGE_ACTION.OTHER;
-                return parts;
-            }
-            throw 'Incorrect protocol';
+        let heartbeat_test = HEARTBEAT_REGEX.exec(data);
+
+        if (heartbeat_test) {
+            let groups = heartbeat_test.groups;
+            parts.device_id = groups['IMEI'];
+            if (this.device.loged && this.device.getUID() != parts.device_id) throw `The logued device ID doesn't match the data ID[${parts.device_id}]`;
+            parts.cmd = "heartbeat";
+            parts.action = GPS_MESSAGE_ACTION.OTHER;
+            return parts;
         }
 
-        if (data.length < 22)
+        let data_test = DATA_REGEX.exec(data);
+        if (!data_test)
             throw 'Incorrect protocol';
 
-        parts.device_id = data.substring(5, 20);
-        var content = data.substring(21, data.length - 1);
+        let groups = data_test.groups;
+        parts.device_id = groups['IMEI'];
+        var content = groups['DATA'];
         var parsed_content = content.split(',');
-        parts.cmd = (parsed_content.length > 0) ? parsed_content[0] : null;
+        parts.cmd = parsed_content[0] ?? null;
         parts.data = parsed_content;
 
         switch (parts.cmd) {

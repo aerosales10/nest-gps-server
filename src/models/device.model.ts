@@ -15,6 +15,7 @@ export class GpsDevice extends AbstractGpsDevice {
     loged: boolean;
     logger: LoggerService;
 
+
     constructor(adapter: GpsAdapterInterface, socket: TCPSocket | UDPSocket, logger?: LoggerService) {
         super(adapter, socket, logger);
     }
@@ -25,7 +26,7 @@ export class GpsDevice extends AbstractGpsDevice {
 
     async handle_action(action: GPS_MESSAGE_ACTION, message_parts: GpsMessagePartsInterface): Promise<void> {
         if (action != GPS_MESSAGE_ACTION.LOGIN_REQUEST && !this.loged) {
-            await this.adapter.send_device_request_login();
+            try { await this.adapter.send_device_request_login(); } catch (err) { this.emit('error', err); }
             this.logger.debug(`${this.getUID()} is trying to ${GPS_MESSAGE_ACTION[action]} but isn't logged. Action wasn't executed.`);
             return;
         }
@@ -50,14 +51,16 @@ export class GpsDevice extends AbstractGpsDevice {
     }
 
     async handle_login_request(message_parts: GpsMessagePartsInterface): Promise<boolean> {
-        let can_login = await this.adapter.login_request(this.getUID(), message_parts);
+        let can_login = false;
+        try { can_login = await this.adapter.login_request(this.getUID(), message_parts); } catch (err) { this.emit('error', err); }
         this.login(can_login);
         const login_event: GpsLoginRequestEvent = { uid: this.getUID(), message: message_parts, ip: this.ip };
         return this.emit('login_request', login_event);
     }
 
     async handle_other_request(message_parts: GpsMessagePartsInterface): Promise<boolean> {
-        const response = this.adapter.get_other_actions(message_parts);
+        let response = null;
+        try { response = this.adapter.get_other_actions(message_parts); } catch (err) { this.emit('error', err); return false; }
         return this.emit('other_request', response);
     }
 
@@ -69,17 +72,20 @@ export class GpsDevice extends AbstractGpsDevice {
             return;
         }
         this.loged = true;
-        await this.adapter.send_device_authorized();
+
+        try { await this.adapter.send_device_authorized(); } catch (err) { this.emit('error', err); return; }
+        try { await this.adapter.set_refresh_time(this.trackInterval); } catch (err) { this.emit('error', err); return; }
         this.logger.debug(`Device ${this.getUID()} has been authorized.`);
     }
 
     async logout(): Promise<void> {
         this.loged = false;
-        await this.adapter.request_logout();
+        try { await this.adapter.request_logout(); } catch (err) { this.emit('error', err); }
     }
 
     async handle_ping_action(message_parts: GpsMessagePartsInterface): Promise<boolean> {
-        const gps_data = await this.adapter.get_ping_data(message_parts);
+        let gps_data = null;
+        try { gps_data = await this.adapter.get_ping_data(message_parts); } catch (err) { this.emit('error', err); return false; }
         if (!gps_data) {
             this.logger.debug(`GPS data can't be parsed. Discarding the packet.`);
             return false;
@@ -91,7 +97,8 @@ export class GpsDevice extends AbstractGpsDevice {
     }
 
     async handle_alarm_action(message_parts: GpsMessagePartsInterface): Promise<boolean> {
-        const alarm_data = await this.adapter.get_alarm_data(message_parts);
+        let alarm_data = null;
+        try { alarm_data = await this.adapter.get_alarm_data(message_parts); } catch (err) { this.emit('error', err); return false; }
         if (!alarm_data) {
             this.logger.debug(`Alarm data can't be parsed. Discarding the packet.`);
             return false;
@@ -103,13 +110,25 @@ export class GpsDevice extends AbstractGpsDevice {
     }
 
     async set_refresh_time(interval: number): Promise<boolean> {
-        return this.adapter.set_refresh_time(interval);
+        try {
+            return this.adapter.set_refresh_time(interval);
+        }
+        catch (err) {
+            this.emit('error', err);
+            return false;
+        }
     }
 
     async send(msg: Uint8Array | string): Promise<boolean> {
-        if (this.socket instanceof TCPSocket)
-            return this.socket.write(msg);
-        this.socket.send(msg, this.port, this.ip);
-        return true;
+        try {
+            if (this.socket instanceof TCPSocket)
+                return this.socket.write(msg);
+            this.socket.send(msg, this.port, this.ip);
+            return true;
+        }
+        catch (err) {
+            this.emit('error', err);
+            return false;
+        }
     };
 }

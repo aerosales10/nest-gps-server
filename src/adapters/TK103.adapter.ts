@@ -28,6 +28,10 @@ export class TK103 implements GpsAdapterInterface {
             action: null
         };
 
+        if (!+response.device_id) throw "The device ID must be a numeric value";
+        if (this.device.loged && this.device.getUID() != response.device_id)
+            throw `The logued device ID doesn't match the data ID[${response.device_id}]`;
+
         switch (response.cmd) {
             case "BP05":
                 response.action = GPS_MESSAGE_ACTION.LOGIN_REQUEST

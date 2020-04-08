@@ -14,6 +14,7 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
     name: string;
     loged: boolean;
     logger: LoggerService;
+    trackInterval: number;
     protected dataTimehandlder: NodeJS.Timeout;
     protected timeoutCounter: number;
 
@@ -27,9 +28,10 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
         this.adapter.device = this;
         this.socket.on('close', () => this.emit('disconnect', this.getUID()));
         this.timeoutCounter = 120 * 1000; // TWO MINUTES
+        this.trackInterval = 30; // DEFAULTS TO 30s
         this.setTimeout();
         this.on('data', this.handle_data);
-        this.on('error', this.logger.error);
+        this.on('error', err => this.logger.error(`[${this.getUID()}][${this.ip}:${this.port}]${err}`));
     }
 
     protected timeout() {
@@ -54,8 +56,8 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
 
     async handle_data(data: Buffer | string): Promise<void> {
         this.clearTimeout().setTimeout();
-        const parts = await this.adapter.parse_data(data);
-
+        let parts = null;
+        try { parts = await this.adapter.parse_data(data); } catch (err) { this.emit('error', err); return; }
         if (!parts) {
             this.logger.debug(`The message: ${data} can't be parsed. Discarding`);
             return;
