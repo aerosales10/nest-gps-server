@@ -1,8 +1,9 @@
 import { Module, Logger, DynamicModule } from '@nestjs/common';
-import { GpsServerService } from './gps-server.service';
+import { GpsTCPServerService } from './gps-tcp-server.service';
 import { DeviceFactory } from './factory';
 import { GpsServerOptionsInterface } from './interface';
 import { Echo } from './adapters';
+import { GpsUDPServerService } from './gps-udp-server.service';
 
 @Module({})
 export class GpsServerModule {
@@ -13,7 +14,11 @@ export class GpsServerModule {
     options.providers.push({ provide: 'GPS_DEVICE_FACTORY', useClass: (options.device_factory) ? options.device_factory : DeviceFactory });
     options.providers.push({ provide: 'GPS_LOGGER', useValue: (options.logger) ? options.logger : Logger });
     options.providers.push({ provide: 'GPS_ADAPTER', useClass: options.adapter ?? Echo });
-    options.providers.push(GpsServerService);
+    let useTCP = options.useTCP === true || (options.useUDP === undefined || options.useUDP === false);
+    if (useTCP)
+      options.providers.push(GpsTCPServerService);
+    if (options.useUDP)
+      options.providers.push(GpsUDPServerService);
     return {
       module: GpsServerModule,
       imports: options.imports,

@@ -1,28 +1,51 @@
 import { GpsDeviceInterface, GpsAdapterInterface, GPS_MESSAGE_ACTION, GpsMessagePartsInterface } from "../interface";
-import { Socket } from "net";
+import { Socket as TCPSocket } from "net";
 import { EventEmitter } from "events";
 import { LoggerService, Logger } from '@nestjs/common';
+import { Socket as UDPSocket } from "dgram";
+import { setTimeout } from "timers";
 
 export abstract class AbstractGpsDevice extends EventEmitter implements GpsDeviceInterface {
     uid: string;
-    socket: Socket;
+    socket: TCPSocket | UDPSocket;
     adapter: GpsAdapterInterface;
     ip: string;
     port: number;
     name: string;
     loged: boolean;
     logger: LoggerService;
+    protected dataTimehandlder: NodeJS.Timeout;
+    protected timeoutCounter: number;
 
-    constructor(adapter: GpsAdapterInterface, socket: Socket, logger?: LoggerService) {
+    constructor(adapter: GpsAdapterInterface, socket: TCPSocket | UDPSocket, logger?: LoggerService) {
         super({ captureRejections: true });
         this.adapter = adapter;
         this.socket = socket;
-        this.ip = socket.remoteAddress;
-        this.port = socket.remotePort;
-        this.on('data', this.handle_data);
+        this.ip = (socket instanceof TCPSocket) ? socket.remoteAddress : this.ip;
+        this.port = (socket instanceof TCPSocket) ? socket.remotePort : this.port;
         this.logger = logger || Logger;
         this.adapter.device = this;
         this.socket.on('close', () => this.emit('disconnect', this.getUID()));
+        this.timeoutCounter = 120 * 1000; // TWO MINUTES
+        this.setTimeout();
+        this.on('data', this.handle_data);
+        this.on('error', this.logger.error);
+    }
+
+    protected timeout() {
+        this.emit('disconnect', this.getUID());
+    }
+
+    protected setTimeout(): AbstractGpsDevice {
+        if (this.socket instanceof UDPSocket)
+            this.dataTimehandlder = setTimeout(this.timeout.bind(this), this.timeoutCounter);
+        return this;
+    }
+
+    protected clearTimeout(): AbstractGpsDevice {
+        if (this.socket instanceof UDPSocket)
+            clearTimeout(this.dataTimehandlder);
+        return this;
     }
 
     getUID(): string {
@@ -30,6 +53,7 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
     }
 
     async handle_data(data: Buffer | string): Promise<void> {
+        this.clearTimeout().setTimeout();
         const parts = await this.adapter.parse_data(data);
 
         if (!parts) {

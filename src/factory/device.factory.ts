@@ -1,6 +1,7 @@
 import { GpsAdapterInterface } from '../interface'
-import { Socket } from 'net';
-import { LoggerService, Injectable, Inject, Logger } from '@nestjs/common';
+import { Socket as TCPSocket } from 'net';
+import { Socket as UDPSocket } from 'dgram';
+import { LoggerService, Injectable, Inject } from '@nestjs/common';
 import { DeviceAbstractFactory } from './device-abstract.factory';
 import { GpsDevice } from '../models/device.model';
 import { AbstractGpsDevice } from '../models';
@@ -10,7 +11,7 @@ export class DeviceFactory extends DeviceAbstractFactory {
     constructor(@Inject('GPS_ADAPTER') adapter: GpsAdapterInterface, @Inject('GPS_LOGGER') logger: LoggerService) {
         super(adapter, logger);
     }
-    public create(socket: Socket): AbstractGpsDevice {
+    public create(socket: TCPSocket | UDPSocket): AbstractGpsDevice {
         return new GpsDevice(this.adapter, socket, this.logger);
     }
 }

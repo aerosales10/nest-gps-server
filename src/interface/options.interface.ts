@@ -10,4 +10,6 @@ export interface GpsServerOptionsInterface {
     device_factory?: Type<DeviceAbstractFactory>;
     imports?: Array<Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference>,
     providers?: Provider[];
+    useUDP?: boolean;
+    useTCP?: boolean;
 };

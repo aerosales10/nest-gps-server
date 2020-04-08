@@ -1,10 +1,11 @@
-import { Socket} from "net";
+import { Socket as TCPSocket } from "net";
 import { GpsAdapterInterface } from "./adapter.interface";
 import { GPS_MESSAGE_ACTION, GpsMessagePartsInterface } from "./message_parts.interface";
+import { Socket as UDPSocket } from "dgram";
 
 export interface GpsDeviceInterface {
     uid: string;
-    socket: Socket;
+    socket: TCPSocket | UDPSocket;
     adapter: GpsAdapterInterface;
     ip: string;
     port: number;

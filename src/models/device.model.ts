@@ -1,12 +1,13 @@
-import { GpsAdapterInterface, GPS_MESSAGE_ACTION, GpsMessagePartsInterface } from "../interface";
-import { Socket } from "net";
-import { LoggerService, Logger } from '@nestjs/common';
-import { GpsLoginRequestEvent, GpsLoginFailEvent, GpsPingEvent, GpsAlarmEvent } from "../events";
+import { GPS_MESSAGE_ACTION, GpsAdapterInterface, GpsMessagePartsInterface } from "../interface";
+import { Socket as TCPSocket } from "net";
+import { GpsLoginFailEvent, GpsLoginRequestEvent, GpsPingEvent, GpsAlarmEvent } from "../events";
 import { AbstractGpsDevice } from "./abstract-device.model";
+import { Socket as UDPSocket } from "dgram";
+import { LoggerService } from "@nestjs/common";
 
 export class GpsDevice extends AbstractGpsDevice {
     uid: string;
-    socket: Socket;
+    socket: TCPSocket | UDPSocket;
     adapter: GpsAdapterInterface;
     ip: string;
     port: number;
@@ -14,7 +15,7 @@ export class GpsDevice extends AbstractGpsDevice {
     loged: boolean;
     logger: LoggerService;
 
-    constructor(adapter: GpsAdapterInterface, socket: Socket, logger?: LoggerService) {
+    constructor(adapter: GpsAdapterInterface, socket: TCPSocket | UDPSocket, logger?: LoggerService) {
         super(adapter, socket, logger);
     }
 
@@ -106,6 +107,9 @@ export class GpsDevice extends AbstractGpsDevice {
     }
 
     async send(msg: Uint8Array | string): Promise<boolean> {
-        return this.socket.write(msg);
+        if (this.socket instanceof TCPSocket)
+            return this.socket.write(msg);
+        this.socket.send(msg, this.port, this.ip);
+        return true;
     };
 }

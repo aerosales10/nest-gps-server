@@ -1,7 +1,8 @@
 import { GpsAdapterInterface } from '../interface'
-import { Socket } from 'net';
+import { Socket as TCPSocket } from 'net';
 import { LoggerService } from '@nestjs/common';
 import { AbstractGpsDevice } from '../models';
+import { Socket as UDPSocket } from 'dgram';
 
 export abstract class DeviceAbstractFactory {
     protected adapter: GpsAdapterInterface;
@@ -10,5 +11,5 @@ export abstract class DeviceAbstractFactory {
         this.adapter = adapter;
         this.logger = logger;
     };
-    public abstract create(socket: Socket): AbstractGpsDevice;
+    public abstract create(socket: TCPSocket | UDPSocket): AbstractGpsDevice;
 }

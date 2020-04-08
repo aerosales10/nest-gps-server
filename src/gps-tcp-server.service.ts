@@ -1,13 +1,14 @@
 import { Injectable, Inject, OnApplicationBootstrap, OnApplicationShutdown, LoggerService } from '@nestjs/common';
-import { Server, Socket, createServer } from 'net';
+import { Server as TCPSERVER, Socket as TCPSocket, createServer } from 'net';
 import { EventEmitter } from 'events';
 import { GpsServerOptionsInterface } from './interface';
 import { DeviceAbstractFactory } from './factory';
 import { AbstractGpsDevice } from './models';
 
+
 @Injectable()
-export class GpsServerService extends EventEmitter implements OnApplicationBootstrap, OnApplicationShutdown {
-    protected server: Server;
+export class GpsTCPServerService extends EventEmitter implements OnApplicationBootstrap, OnApplicationShutdown {
+    protected tcp: TCPSERVER;
     protected devices: Array<AbstractGpsDevice>;
     protected options: GpsServerOptionsInterface;
     protected logger: LoggerService;
@@ -26,37 +27,48 @@ export class GpsServerService extends EventEmitter implements OnApplicationBoots
         this.devices = [];
     }
 
-    async connection_handler(socket: Socket) {
+    async connection_handler(socket: TCPSocket) {
         let self = this;
         self.logger.debug(`Incomming connection from ${socket.remoteAddress}:${socket.remotePort}`);
         const device = this.factory.create(socket);
         self.devices.push(device);
 
         socket.on('data', (data) => device.emit('data', data));
-        socket.on('end', () => {
+        device.on('disconnect', (uid) => {
             let index = self.devices.findIndex((device: AbstractGpsDevice, index: number) => {
-                if (device.socket.remoteAddress == socket.remoteAddress && device.socket.remotePort == socket.remotePort) {
+                if (device.getUID() === uid) {
                     self.devices.splice(index, 1);
                     return true;
                 }
             });
             if (index < 0) return;
-            self.logger.debug(`Device ${device.socket.remoteAddress}:${device.socket.remotePort} disconnected.`);
+            self.logger.debug(`Device ${device.ip}:${device.port} disconnected.`);
             device.emit('disconnected');
         });
+
+        setTimeout(() => {
+            if (!device.loged) {
+                socket.end();
+            }
+        }, 30000);
     }
 
     onApplicationShutdown(signal?: string) {
-        this.server.removeAllListeners();
-        this.server.close();
+        this.tcp.removeAllListeners();
+        this.tcp.close();
         delete this.devices;
     }
 
     async onApplicationBootstrap() {
-        this.server = createServer(this.connection_handler.bind(this)).listen({
+        this.on('error', this.onPromiseError.bind(this));
+        this.tcp = createServer(this.connection_handler.bind(this)).listen({
             host: this.options.bind,
             port: this.options.port
         });
-        this.logger.debug(`The server is listening on ${this.options.bind}:${this.options.port}`);
+        this.logger.debug(`The TCP server is listening on ${this.options.bind}:${this.options.port}`);
+    }
+
+    onPromiseError(error) {
+        this.logger.error(error);
     }
 }
