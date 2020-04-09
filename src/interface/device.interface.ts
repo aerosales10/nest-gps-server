@@ -11,6 +11,7 @@ export interface GpsDeviceInterface {
     port: number;
     name: string;
     loged: boolean;
+    custom: Object;
 
     getUID(): string;
     handle_data(data: Buffer | string): Promise<void>;

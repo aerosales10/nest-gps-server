@@ -1,7 +1,7 @@
-import { GpsMessagePartsInterface, GpsPingDataInterface } from "../interface";
+import { GpsMessagePartsInterface, GpsGeoDataInterface } from "../interface";
 
 export interface GpsPingEvent {
     uid: string;
-    gps_data: GpsPingDataInterface;
+    data: GpsGeoDataInterface;
     message: GpsMessagePartsInterface;
 }

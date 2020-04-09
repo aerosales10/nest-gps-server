@@ -5,4 +5,5 @@ export interface GpsMessagePartsInterface {
     device_id: string;
     data: Object;
     cmd: string;
+    custom?: Object;
 }

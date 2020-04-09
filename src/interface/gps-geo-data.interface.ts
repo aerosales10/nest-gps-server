@@ -1,4 +1,5 @@
-export interface GpsPingDataInterface {
+export interface GpsGeoDataInterface {
+    status?: string;
     date: Date;
     fixed?: boolean;
     latitude: number;

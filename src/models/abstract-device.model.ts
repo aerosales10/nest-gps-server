@@ -15,8 +15,10 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
     loged: boolean;
     logger: LoggerService;
     trackInterval: number;
+    custom: Object;
     protected dataTimehandlder: NodeJS.Timeout;
     protected timeoutCounter: number;
+    
 
     constructor(adapter: GpsAdapterInterface, socket: TCPSocket | UDPSocket, logger?: LoggerService) {
         super({ captureRejections: true });

@@ -1,8 +1,7 @@
 import {
     GpsAdapterInterface,
     GpsMessagePartsInterface,
-    GpsAlarmDataInterface,
-    GpsPingDataInterface,
+    GpsGeoDataInterface,
     GpsOtherActionsDataInterface,
     GPS_MESSAGE_ACTION
 
@@ -58,7 +57,7 @@ const DATA_REGEX = /^imei:(?<IMEI>\d{15,16}),(?<DATA>.+);$/g
 
 export class GPS103 implements GpsAdapterInterface {
     device: AbstractGpsDevice;
-    async get_alarm_data(message: GpsMessagePartsInterface): Promise<GpsAlarmDataInterface> {
+    async get_alarm_data(message: GpsMessagePartsInterface): Promise<GpsGeoDataInterface> {
         const data = this.parse_message(message);
         if (message.cmd.startsWith("T:"))
             data.temperature = message.cmd.substring(message.cmd.indexOf("+") + 1);
@@ -79,16 +78,16 @@ export class GPS103 implements GpsAdapterInterface {
             Object.assign(data, service);
         }
         return {
-            code: data["keywords"],
-            msg: null,
+            status: message.cmd,
             latitude: data['latitude'] ?? null,
             longitude: data['longitude'] ?? null,
+            date: data['date'],
             custom: data
         };
     }
-    async get_ping_data(message: GpsMessagePartsInterface): Promise<GpsPingDataInterface> {
+    async get_ping_data(message: GpsMessagePartsInterface): Promise<GpsGeoDataInterface> {
         const data = this.parse_message(message);
-        let res: GpsPingDataInterface = {
+        let res: GpsGeoDataInterface = {
             latitude: data.latitude,
             longitude: data.longitude,
             date: data['datetime'],

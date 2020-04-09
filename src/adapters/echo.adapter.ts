@@ -1,8 +1,7 @@
 import {
     GpsAdapterInterface,
     GpsMessagePartsInterface,
-    GpsAlarmDataInterface,
-    GpsPingDataInterface,
+    GpsGeoDataInterface,
     GpsOtherActionsDataInterface,
     GPS_MESSAGE_ACTION
 } from '../interface';
@@ -25,14 +24,16 @@ export class Echo implements GpsAdapterInterface {
 
         return response;
     }
-    async get_alarm_data(message: GpsMessagePartsInterface): Promise<GpsAlarmDataInterface> {
+    async get_alarm_data(message: GpsMessagePartsInterface): Promise<GpsGeoDataInterface> {
         return {
-            code: "200",
-            msg: "Hello there",
+            status: 'alarm',
+            date: new Date(),
+            latitude: 0,
+            longitude: 0,
             custom: message.data
         };
     }
-    async get_ping_data(message: GpsMessagePartsInterface): Promise<GpsPingDataInterface> {
+    async get_ping_data(message: GpsMessagePartsInterface): Promise<GpsGeoDataInterface> {
         this.device.send(`${JSON.stringify(message)}\r\n`);
         return {
             date: new Date(),

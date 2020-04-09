@@ -14,6 +14,7 @@ export class GpsDevice extends AbstractGpsDevice {
     name: string;
     loged: boolean;
     logger: LoggerService;
+    
 
 
     constructor(adapter: GpsAdapterInterface, socket: TCPSocket | UDPSocket, logger?: LoggerService) {
@@ -92,7 +93,7 @@ export class GpsDevice extends AbstractGpsDevice {
         }
 
         this.logger.debug(`Position received ( ${gps_data.latitude}, ${gps_data.longitude} ) ${gps_data.date}`);
-        const ping_event: GpsPingEvent = { uid: this.getUID(), gps_data: gps_data, message: message_parts };
+        const ping_event: GpsPingEvent = { uid: this.getUID(), data: gps_data, message: message_parts };
         return this.emit('ping', ping_event);
     }
 
@@ -105,7 +106,7 @@ export class GpsDevice extends AbstractGpsDevice {
         }
 
         this.logger.debug(`Alarm received ( ${alarm_data.code}, ${alarm_data.msg} )`);
-        const alarm_event: GpsAlarmEvent = { uid: this.getUID(), alarm_data: alarm_data, message: message_parts };
+        const alarm_event: GpsAlarmEvent = { uid: this.getUID(), data: alarm_data, message: message_parts };
         return this.emit('alarm', alarm_event);
     }
 

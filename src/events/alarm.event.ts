@@ -1,7 +1,7 @@
-import { GpsMessagePartsInterface, GpsAlarmDataInterface } from "../interface";
+import { GpsMessagePartsInterface, GpsGeoDataInterface } from "../interface";
 
 export interface GpsAlarmEvent {
     uid: string;
-    alarm_data: GpsAlarmDataInterface;
+    data: GpsGeoDataInterface;
     message: GpsMessagePartsInterface;
 }

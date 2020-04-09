@@ -1,6 +1,5 @@
 import { GpsMessagePartsInterface } from "./message_parts.interface";
-import { GpsAlarmDataInterface } from "./alarm-data.interface";
-import { GpsPingDataInterface } from "./ping-data.interface";
+import { GpsGeoDataInterface } from "./gps-geo-data.interface";
 import { GpsOtherActionsDataInterface } from "./other-actions-data.interface";
 import { AbstractGpsDevice } from "../models";
 
@@ -9,8 +8,8 @@ export interface GpsAdapterInterface {
     device: AbstractGpsDevice;
 
     parse_data(data: Buffer | string): Promise<GpsMessagePartsInterface>;
-    get_alarm_data(message: GpsMessagePartsInterface): Promise<GpsAlarmDataInterface>;
-    get_ping_data(message: GpsMessagePartsInterface): Promise<GpsPingDataInterface>;
+    get_alarm_data(message: GpsMessagePartsInterface): Promise<GpsGeoDataInterface>;
+    get_ping_data(message: GpsMessagePartsInterface): Promise<GpsGeoDataInterface>;
     /**
      * Send data to device responding to a correct authorization
      */
