@@ -59,31 +59,32 @@ export class GPS103 implements GpsAdapterInterface {
     device: AbstractGpsDevice;
     async get_alarm_data(message: GpsMessagePartsInterface): Promise<GpsGeoDataInterface> {
         const data = this.parse_message(message);
-        if (message.cmd.startsWith("T:"))
-            data.temperature = message.cmd.substring(message.cmd.indexOf("+") + 1);
-        if (message.cmd.startsWith("oil "))
-            data.oil_tank1 = message.cmd.substring(message.cmd.indexOf(" ") + 1);
-        if (message.cmd == "DTC") {
-            let DTC = { DTC: data.oil_tank2, oil_tank2: null };
-            Object.assign(data, DTC);
-            data.oil_tank2 = null;
-        }
-        if (message.cmd == "service") {
-            let service = {
-                service_maintenance_expiration: data.oil_tank2,
-                service_maintenance_mileage: data.temperature,
-                oil_tank2: null,
-                temperature: null
-            };
-            Object.assign(data, service);
-        }
-        return {
+        let return_data: GpsGeoDataInterface = {
             status: message.cmd,
             latitude: data['latitude'] ?? null,
             longitude: data['longitude'] ?? null,
             date: data['date'],
-            custom: data
+            altitude: data['altitude'],
+            fixed: data['fixed'],
+            orientation: data['orientation'],
+            speed: data['speed'],
+            custom: {}
         };
+
+        if (message.cmd.startsWith("T:"))
+            return_data.custom['temperature'] = message.cmd.substring(message.cmd.indexOf("+") + 1);
+        if (message.cmd.startsWith("oil "))
+            return_data.custom['oil_tank1'] = message.cmd.substring(message.cmd.indexOf(" ") + 1);
+        if (message.cmd == "DTC") {
+            let DTC = { DTC: data.oil_tank2, oil_tank2: null };
+            Object.assign(data, DTC);
+            return_data.custom['oil_tank2'] = null;
+        }
+        if (message.cmd == "service") {
+            return_data.custom['service_maintenance_expiration'] = data.oil_tank2;
+            return_data.custom['service_maintenance_mileage'] = data.temperature;
+        }
+        return return_data;
     }
     async get_ping_data(message: GpsMessagePartsInterface): Promise<GpsGeoDataInterface> {
         const data = this.parse_message(message);
