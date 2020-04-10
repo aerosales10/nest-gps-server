@@ -11,9 +11,9 @@ import { AbstractGpsDevice } from '../models';
 import { Injectable } from '@nestjs/common';
 
 const format = { "start": "(", "end": ")", "separator": "" };
-const MESSAGE_REGEX = /^\((?<DATE>\d{12})(?<CMD>\w{4})(?<DATA>.{0,1024})\)$/g;
-const LOGIN_REGEX = /^(?<ID>\d{15})(?<GPS>.*)$/g;
-const GPS_REGEX = /^(?<DATE>\d{6})(?<AVAILABILITY>A|V)(?<LATITUDE>(\d|\.){9})(?<LAT_INDICATOR>N|S)(?<LONGITUDE>(\d|\.){10})(?<LON_INDICATOR>E|W)(?<SPEED>(\d|\.){5})(?<TIME>\d{6})(?<ORIENTATION>(\d|\.){6})(?<IO_STATE>\d{8})(?<MILEPOST>\w{1})(?<MILE_DATA>\w{8})$/g
+const MESSAGE_REGEX = /^\((?<DATE>\d{12})(?<CMD>\w{4})(?<DATA>.{0,1024})\)$/;
+const LOGIN_REGEX = /^(?<ID>\d{15})(?<GPS>.*)$/;
+const GPS_REGEX = /^(?<DATE>\d{6})(?<AVAILABILITY>A|V)(?<LATITUDE>(\d|\.){9})(?<LAT_INDICATOR>N|S)(?<LONGITUDE>(\d|\.){10})(?<LON_INDICATOR>E|W)(?<SPEED>(\d|\.){5})(?<TIME>\d{6})(?<ORIENTATION>(\d|\.){6})(?<IO_STATE>\d{8})(?<MILEPOST>\w{1})(?<MILE_DATA>\w{8})$/
 
 const ALARM_TEXT_CODES = [
     "ac alarm",                                 // POWER OFF ALARM

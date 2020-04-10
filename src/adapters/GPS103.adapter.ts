@@ -51,9 +51,9 @@ const ALARM_TEXT_CODES = [
     "service"                                   // Vehicle maintenance notification
 ];
 
-const LOGIN_REGEX = /^##,imei:(?<IMEI>\d{15,16}),A;$/g;
-const HEARTBEAT_REGEX = /^(?<IMEI>\d{15,16})$/g;
-const DATA_REGEX = /^imei:(?<IMEI>\d{15,16}),(?<DATA>.+);$/g
+const LOGIN_REGEX = /^##,imei:(?<IMEI>\d{15,16}),A;$/;
+const HEARTBEAT_REGEX = /^(?<IMEI>\d{15,16})$/;
+const DATA_REGEX = /^imei:(?<IMEI>\d{15,16}),(?<DATA>.+);$/
 
 export class GPS103 implements GpsAdapterInterface {
     device: AbstractGpsDevice;
