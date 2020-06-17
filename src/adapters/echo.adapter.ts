@@ -16,7 +16,7 @@ export class Echo implements GpsAdapterInterface {
             action: GPS_MESSAGE_ACTION.PING,
             cmd: "Echo",
             data: str_data,
-            device_id: "1234567890"
+            device_id: `${this.device.ip}-${this.device.port}`
         };
 
         if (str_data == "login")
