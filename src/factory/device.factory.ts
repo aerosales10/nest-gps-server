@@ -12,6 +12,6 @@ export class DeviceFactory extends DeviceAbstractFactory {
         super(adapter, logger);
     }
     public create(socket: TCPSocket | UDPSocket): AbstractGpsDevice {
-        return new GpsDevice(this.adapter, socket, this.logger);
+        return new GpsDevice(Object.create(this.adapter), socket, this.logger);
     }
 }
