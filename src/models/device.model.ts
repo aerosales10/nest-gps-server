@@ -92,7 +92,7 @@ export class GpsDevice extends AbstractGpsDevice {
             return false;
         }
 
-        this.logger.debug(`Position received ( ${gps_data.latitude}, ${gps_data.longitude} ) ${gps_data.date}`);
+        this.logger.debug(`[${this.getUID()}]Position received ( ${gps_data.latitude}, ${gps_data.longitude} ) ${gps_data.date}`);
         const ping_event: GpsPingEvent = { uid: this.getUID(), data: gps_data, message: message_parts };
         return this.emit('ping', ping_event);
     }

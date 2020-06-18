@@ -32,7 +32,8 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
         this.timeoutCounter = 120 * 1000; // TWO MINUTES
         this.trackInterval = 30; // DEFAULTS TO 30s
         this.setTimeout();
-        this.on('data', this.handle_data);
+        this.socket.on('data', this.handle_data.bind(this));
+
         this.on('error', err => this.logger.error(`[${this.getUID()}][${this.ip}:${this.port}]${err}`));
     }
 
@@ -57,6 +58,7 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
     }
 
     async handle_data(data: Buffer | string): Promise<void> {
+        this.logger.debug(`[${this.getUID()}]Receiving raw data: ${data}`);
         this.clearTimeout().setTimeout();
         let parts = null;
         try { parts = await this.adapter.parse_data(data); } catch (err) { this.emit('error', err); return; }

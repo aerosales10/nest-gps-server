@@ -5,7 +5,7 @@ import { TK103, GPS103, Echo } from "./adapters";
 async function bootstrap() {
     const app = await NestFactory.createApplicationContext(GpsServerModule.forRoot({
         port: 8086,
-        adapter: Echo,
+        adapter: GPS103,
         useTCP: true,
         useUDP: true
     }));

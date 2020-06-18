@@ -33,7 +33,6 @@ export class GpsTCPServerService extends EventEmitter implements OnApplicationBo
         const device = this.factory.create(socket);
         self.devices.push(device);
 
-        socket.on('data', (data) => device.emit('data', data));
         device.on('disconnect', (uid) => {
             let index = self.devices.findIndex((device: AbstractGpsDevice, index: number) => {
                 if (device.getUID() === uid) {

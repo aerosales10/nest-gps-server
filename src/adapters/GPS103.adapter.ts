@@ -51,9 +51,9 @@ const ALARM_TEXT_CODES = [
     "service"                                   // Vehicle maintenance notification
 ];
 
-const LOGIN_REGEX = /^##,imei:(?<IMEI>\d{15,16}),A;$/;
+const LOGIN_REGEX = /##,imei:(?<IMEI>\d{15,16}),A;/;
 const HEARTBEAT_REGEX = /^(?<IMEI>\d{15,16})$/;
-const DATA_REGEX = /^imei:(?<IMEI>\d{15,16}),(?<DATA>.+);$/
+const DATA_REGEX = /imei:(?<IMEI>\d{15,16}),(?<DATA>.+);/
 
 export class GPS103 implements GpsAdapterInterface {
     device: AbstractGpsDevice;
@@ -157,6 +157,9 @@ export class GPS103 implements GpsAdapterInterface {
     async parse_data(data: Buffer | string): Promise<GpsMessagePartsInterface> {
         data = data.toString().trim();
 
+        
+        //if (multiple.length > 0) data = multiple[1];
+
         let parts: GpsMessagePartsInterface = {
             device_id: null,
             cmd: null,
@@ -179,7 +182,7 @@ export class GPS103 implements GpsAdapterInterface {
         if (heartbeat_test) {
             let groups = heartbeat_test.groups;
             parts.device_id = groups['IMEI'];
-            if (this.device.loged && this.device.getUID() != parts.device_id) throw `The logued device ID doesn't match the data ID[${parts.device_id}]`;
+            //if (this.device.loged && this.device.getUID() != parts.device_id) throw `The logued device ID [${this.device.getUID()}] doesn't match the data ID[${parts.device_id}]`;
             parts.cmd = "heartbeat";
             parts.action = GPS_MESSAGE_ACTION.OTHER;
             return parts;
@@ -191,7 +194,7 @@ export class GPS103 implements GpsAdapterInterface {
 
         let groups = data_test.groups;
         parts.device_id = groups['IMEI'];
-        if (this.device.loged && this.device.getUID() != parts.device_id) throw `The logued device ID doesn't match the data ID[${parts.device_id}]`;
+        //if (this.device.loged && this.device.getUID() != parts.device_id) throw `The logued device ID [${this.device.getUID()}] doesn't match the data ID[${parts.device_id}]`;
         var content = groups['DATA'];
         var parsed_content = content.split(',');
         parts.cmd = parsed_content[0] ?? null;
