@@ -7,7 +7,7 @@ export interface GpsAdapterInterface {
 
     device: AbstractGpsDevice;
 
-    parse_data(data: Buffer | string): Promise<GpsMessagePartsInterface>;
+    parse_data(data: Buffer | string): Promise<GpsMessagePartsInterface | GpsMessagePartsInterface[]>;
     get_alarm_data(message: GpsMessagePartsInterface): Promise<GpsGeoDataInterface>;
     get_ping_data(message: GpsMessagePartsInterface): Promise<GpsGeoDataInterface>;
     /**

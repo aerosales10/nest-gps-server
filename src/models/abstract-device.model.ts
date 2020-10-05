@@ -18,7 +18,7 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
     custom: Object;
     protected dataTimehandlder: NodeJS.Timeout;
     protected timeoutCounter: number;
-    
+
 
     constructor(adapter: GpsAdapterInterface, socket: TCPSocket | UDPSocket, logger?: LoggerService) {
         super({ captureRejections: true });
@@ -67,18 +67,30 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
             return;
         }
 
-        if (!this.getUID() && !parts.device_id) {
-            this.logger.debug(`The adapter doesn't return the device_id`);
-            return;
-        }
+        let part: GpsMessagePartsInterface = null;
+        if (!Array.isArray(parts))
+            part = parts;
 
-        if (!parts.cmd) {
-            this.logger.debug(`The adapter doesn't return the command (cmd) property`);
-            return;
-        }
+        do {
+            if (Array.isArray(parts)) {
+                if ((parts as Array<any>).length == 0)
+                    break;
+                part = (parts as Array<any>).pop();
+            }
 
-        this.uid = parts.device_id;
-        await this.handle_action(parts.action, parts);
+            if (!this.getUID() && !part.device_id) {
+                this.logger.debug(`The adapter doesn't return the device_id`);
+                return;
+            }
+
+            if (!part.cmd) {
+                this.logger.debug(`The adapter doesn't return the command (cmd) property`);
+                return;
+            }
+
+            this.uid = part.device_id;
+            await this.handle_action(part.action, part);
+        } while (Array.isArray(parts));
     }
 
     async abstract handle_action(action: GPS_MESSAGE_ACTION, message_parts: GpsMessagePartsInterface): Promise<void>;

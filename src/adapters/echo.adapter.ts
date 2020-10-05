@@ -10,7 +10,7 @@ import { AbstractGpsDevice } from '../models';
 export class Echo implements GpsAdapterInterface {
     device: AbstractGpsDevice;
 
-    async parse_data(data: string | Buffer): Promise<GpsMessagePartsInterface> {
+    async parse_data(data: string | Buffer): Promise<GpsMessagePartsInterface[]> {
         let str_data = data.toString().trim();
         let response = {
             action: GPS_MESSAGE_ACTION.PING,
@@ -22,7 +22,7 @@ export class Echo implements GpsAdapterInterface {
         if (str_data == "login")
             response.action = GPS_MESSAGE_ACTION.LOGIN_REQUEST;
 
-        return response;
+        return [response, response];
     }
     async get_alarm_data(message: GpsMessagePartsInterface): Promise<GpsGeoDataInterface> {
         return {
