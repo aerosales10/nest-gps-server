@@ -93,9 +93,9 @@ export abstract class AbstractGpsDevice extends EventEmitter implements GpsDevic
         } while (Array.isArray(parts));
     }
 
-    async abstract handle_action(action: GPS_MESSAGE_ACTION, message_parts: GpsMessagePartsInterface): Promise<void>;
-    async abstract login(can_login: boolean): Promise<void>;
-    async abstract logout(): Promise<void>;
-    async abstract set_refresh_time(interval: number): Promise<boolean>;
-    async abstract send(msg: Uint8Array | string): Promise<boolean>
+    abstract handle_action(action: GPS_MESSAGE_ACTION, message_parts: GpsMessagePartsInterface): Promise<void>;
+    abstract login(can_login: boolean): Promise<void>;
+    abstract logout(): Promise<void>;
+    abstract set_refresh_time(interval: number): Promise<boolean>;
+    abstract send(msg: Uint8Array | string): Promise<boolean>
 }
