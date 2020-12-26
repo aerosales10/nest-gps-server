@@ -12,7 +12,7 @@ export class GpsServerModule {
     options.providers = options.providers ?? [];
     options.providers.push({ provide: 'GPS_CONFIG_OPTIONS', useValue: options });
     options.providers.push({ provide: 'GPS_DEVICE_FACTORY', useClass: (options.device_factory) ? options.device_factory : DeviceFactory });
-    options.providers.push({ provide: 'GPS_LOGGER', useValue: (options.logger) ? options.logger : Logger });
+    options.providers.push({ provide: 'GPS_LOGGER', useClass: (options.logger) ? options.logger : Logger });
     options.providers.push({ provide: 'GPS_ADAPTER', useClass: options.adapter ?? Echo });
     let useTCP = options.useTCP === true || (options.useUDP === undefined || options.useUDP === false);
     if (useTCP)
